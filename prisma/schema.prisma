@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Users {
-  id Int @default(autoincrement()) @id
+  id String @id @default(uuid())
   name String
   number String
   username String? @unique
@@ -24,4 +24,13 @@ model Users {
   address String
   membership_fee String
   entry_date DateTime? @default(now())
+}
+
+model Gurantors {
+id String @id @default(uuid())
+name String
+number String
+email String @unique
+address String
+guranted_for String
 }
