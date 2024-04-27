@@ -26,11 +26,11 @@ model Users {
   entry_date DateTime? @default(now())
 }
 
-model Gurantors {
+model Guarantors {
 id String @id @default(uuid())
 name String
 number String
 email String @unique
 address String
-guranted_for String
+guranted_for String?
 }

@@ -1,26 +1,32 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
 
 @Injectable()
 export class GuarantorService {
+  constructor(private prisma: PrismaService) {}
+
   create(createGuarantorDto: CreateGuarantorDto) {
-    return 'This action adds a new guarantor';
+    return this.prisma.guarantors.create({ data: createGuarantorDto });
   }
 
   findAll() {
-    return `This action returns all guarantor`;
+    return this.prisma.guarantors.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} guarantor`;
+  findOne(id: string) {
+    return this.prisma.guarantors.findUnique({ where: { id } });
   }
 
-  update(id: number, updateGuarantorDto: UpdateGuarantorDto) {
-    return `This action updates a #${id} guarantor`;
+  update(id: string, updateGuarantorDto: UpdateGuarantorDto) {
+    return this.prisma.guarantors.update({
+      data: updateGuarantorDto,
+      where: { id },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} guarantor`;
+  remove(id: string) {
+    return this.prisma.guarantors.delete({ where: { id } });
   }
 }
