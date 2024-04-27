@@ -24,6 +24,8 @@ model Users {
   address String
   membership_fee String
   entry_date DateTime? @default(now())
+  guarantors Guarantors[]
+  verificationdata VerificationData [] 
 }
 
 model Guarantors {
@@ -32,5 +34,16 @@ name String
 number String
 email String @unique
 address String
-guranted_for String?
+UserID String
+guranted_for Users @relation(fields: [UserID], references: [id])
+
+}
+
+model VerificationData {
+id String @id @default(uuid())
+id_1 String
+id_2 String
+picture String
+UserId String @unique
+user Users @relation(fields: [UserId], references: [id])
 }
