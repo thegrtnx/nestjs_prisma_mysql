@@ -12,7 +12,7 @@ import { GuarantorService } from './guarantor.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
 
-@ApiTags('guarantor')
+@ApiTags('Guarantor')
 @Controller('guarantor')
 export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
