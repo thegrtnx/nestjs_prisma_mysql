@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Users } from '@prisma/client';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { AuthUserDto } from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
+import { handleResponse } from 'src/util/responseHandler';
 
 @Injectable()
 export class AuthService {
@@ -16,15 +14,12 @@ export class AuthService {
     const user = await this.userService.findOneByEmail(email);
 
     if (user.data.user.password !== password) return false;
-    return this.jwtService.sign({
-      sub: user.data.user.id,
-      email: user.data.user.email,
+    const accessToken = this.jwtService.sign({
+      user: user.data.user,
     });
-  }
 
-  async registerUser(CreateUserDto: CreateUserDto) {
-    const newUser = await this.userService.create(CreateUserDto);
-    //return this.sign(newUser);
-    return newUser;
+    return new handleResponse(HttpStatus.CREATED, 'User Login Successfull', {
+      access_token: accessToken,
+    });
   }
 }

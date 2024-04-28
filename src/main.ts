@@ -21,8 +21,9 @@ async function bootstrap() {
     .addServer('http://localhost:3000', 'Local environment')
     .addServer('https://staging.yourapi.com', 'Staging')
     .addServer('https://production.yourapi.com', 'Production')
+    .addBearerAuth(undefined, 'defaultBearerAuth')
     .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'authorization',
     )
     .addTag('App', 'Endpoint for server test')
