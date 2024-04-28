@@ -3,6 +3,7 @@ import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthUserDto } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
+import { Me } from './guards/me/me.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -19,7 +20,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Endpoint for viewing user profile' })
   @Get('profile')
   @UseGuards(JwtAuthGuard)
-  profile(@Request() req) {
-    return req.user;
+  profile(@Me() me) {
+    return me;
   }
 }

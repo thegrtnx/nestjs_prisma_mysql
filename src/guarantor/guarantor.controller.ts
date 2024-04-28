@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { GuarantorService } from './guarantor.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
+import { Me } from 'src/auth/guards/me/me.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Guarantors')
 @Controller('guarantor')
@@ -18,9 +21,14 @@ export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
 
   @Post('signup')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Endpoint for creating guarantor' })
-  create(@Body() createGuarantorDto: CreateGuarantorDto) {
-    return this.guarantorService.create(createGuarantorDto);
+  create(@Me() me, @Body() createGuarantorDto: CreateGuarantorDto) {
+    return this.guarantorService.create({
+      ...createGuarantorDto,
+      UserID: me.user.id,
+    });
   }
 
   @Get('')

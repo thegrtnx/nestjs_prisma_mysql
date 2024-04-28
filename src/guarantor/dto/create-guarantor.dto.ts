@@ -38,12 +38,5 @@ export class CreateGuarantorDto {
   @MinLength(3)
   address: string;
 
-  @ApiProperty({
-    example: '11, qwerty strees, dotcom road',
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
   UserID: string;
 }
