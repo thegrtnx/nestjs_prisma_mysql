@@ -4,11 +4,14 @@ import {
   Post,
   Request,
   Get,
+  Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { AuthUserDto } from './dto/create-auth.dto';
 import { LocalAuthGuard } from './guards/local-auth/local-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 
@@ -19,8 +22,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req) {
-    return req.user;
+  async login(@Body() authUserDto: AuthUserDto) {
+    authUserDto.password = undefined;
+    return authUserDto;
   }
 
   @Post('register')

@@ -31,11 +31,14 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prisma.users.findUnique({ where: { id } });
+    return this.prisma.users.findUniqueOrThrow({ where: { id } });
   }
 
-  findOneByEmail(email: string) {
-    return this.prisma.users.findUnique({ where: { email } });
+  async findOneByEmail(email: string) {
+    const user = await this.prisma.users.findUnique({ where: { email } });
+    return new handleResponse(HttpStatus.OK, 'User fetched successfully', {
+      user,
+    });
   }
 
   update(id: string, updateUserDto: UpdateUserDto) {

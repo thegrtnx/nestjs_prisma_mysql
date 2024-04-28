@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Users } from '@prisma/client';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { AuthUserDto } from './dto/create-auth.dto';
 import { UsersService } from 'src/users/users.service';
 
 @Injectable()
@@ -12,9 +13,11 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
+    //return email + ' ---- ' + password;
+
     const user = await this.userService.findOneByEmail(email);
 
-    if (!user || user.password !== password) return false;
+    if (user.data.user.password !== password) return false;
     return user;
   }
 
