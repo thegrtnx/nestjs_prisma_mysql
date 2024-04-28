@@ -17,12 +17,11 @@ model Users {
   id String @id @default(uuid())
   name String
   number String
-  username String? @unique
   password String?
   role String @default("User")
   email String @unique
   address String
-  membership_fee String
+  membership_fee String @default("0")
   entry_date DateTime? @default(now())
   guarantors Guarantors[]
   verificationdata VerificationData [] 

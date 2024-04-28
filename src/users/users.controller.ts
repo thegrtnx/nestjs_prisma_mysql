@@ -37,6 +37,14 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  @Get(':email')
+  @ApiOperation({
+    summary: 'Endpoint for getting a user by email',
+  })
+  findOneByEmail(@Param('email') email: string) {
+    return this.usersService.findOneByEmail(email);
+  }
+
   @Patch(':id')
   @ApiOperation({
     summary: 'Endpoint for updating a user by id',

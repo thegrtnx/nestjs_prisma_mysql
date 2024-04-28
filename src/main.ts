@@ -2,10 +2,12 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import { GlobalExceptionFilter } from './util/errorHandler';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
 
+  //app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalPipes(new ValidationPipe({ stopAtFirstError: true }));
 
   const options = new DocumentBuilder()
@@ -26,7 +28,7 @@ async function bootstrap() {
   SwaggerModule.setup('api-docs', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
+      //operationsSorter: 'alpha',
     },
   });
 
