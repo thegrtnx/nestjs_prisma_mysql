@@ -13,16 +13,13 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    //return email + ' ---- ' + password;
-
     const user = await this.userService.findOneByEmail(email);
 
     if (user.data.user.password !== password) return false;
-    return user;
-  }
-
-  sign(user: Users) {
-    return this.jwtService.sign({ sub: user.id, email: user.email });
+    return this.jwtService.sign({
+      sub: user.data.user.id,
+      email: user.data.user.email,
+    });
   }
 
   async registerUser(CreateUserDto: CreateUserDto) {

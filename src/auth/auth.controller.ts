@@ -8,7 +8,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthUserDto } from './dto/create-auth.dto';
@@ -22,9 +22,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() authUserDto: AuthUserDto) {
-    authUserDto.password = undefined;
-    return authUserDto;
+  @ApiBody({ type: AuthUserDto })
+  async login(@Request() req) {
+    return req.user;
   }
 
   @Post('register')

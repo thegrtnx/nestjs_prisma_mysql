@@ -37,7 +37,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Get(':email')
+  @Get('/user/:email')
   @ApiOperation({
     summary: 'Endpoint for getting a user by email',
   })
