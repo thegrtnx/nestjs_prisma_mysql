@@ -18,16 +18,7 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.users.findMany().then((users) => {
-      return new handleResponse(
-        HttpStatus.OK,
-        'All users fetched successfully',
-        {
-          ...users,
-          password: undefined,
-        },
-      );
-    });
+    return this.prisma.users.findMany();
   }
 
   findOne(id: string) {
