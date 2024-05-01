@@ -19,13 +19,13 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Guarantors')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('defaultBearerAuth')
 @Controller('guarantor')
 export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
 
   @Post('create/:userId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create guarantors for a specific user' })
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'pictures', maxCount: 3 },

@@ -8,14 +8,18 @@ import {
   Delete,
   UploadedFiles,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Customers')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('defaultBearerAuth')
 @Controller('customer')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
