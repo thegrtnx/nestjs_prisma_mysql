@@ -24,13 +24,12 @@ export class CreateGuarantorDto {
     example: 'abc@xyz.com',
     required: true,
   })
-  @MinLength(3)
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
   @ApiProperty({
-    example: '11, qwerty strees, dotcom road',
+    example: '11, qwerty street, dotcom road',
     required: true,
   })
   @IsString()
@@ -38,5 +37,7 @@ export class CreateGuarantorDto {
   @MinLength(3)
   address: string;
 
+  @IsString()
+  @IsNotEmpty()
   UserID: string;
 }
