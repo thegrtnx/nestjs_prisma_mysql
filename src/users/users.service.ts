@@ -18,7 +18,13 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.users.findMany();
+    return this.prisma.users.findMany().then((users) => {
+      return new handleResponse(
+        HttpStatus.OK,
+        'All users fetched successfully',
+        users,
+      );
+    });
   }
 
   findOne(id: string) {
