@@ -86,9 +86,9 @@ export class UsersService {
     where: { id },
   });
 
-    const pictureUrl = await this.cloudinaryService.uploadImage(picture);
-    const cardFrontUrl = await this.cloudinaryService.uploadImage(cardFront);
-    const cardBackUrl = await this.cloudinaryService.uploadImage(cardBack);
+  const pictureUrl = picture ? await this.cloudinaryService.uploadImage(picture) : null;
+  const cardFrontUrl = cardFront ? await this.cloudinaryService.uploadImage(cardFront) : null;
+  const cardBackUrl = cardBack ? await this.cloudinaryService.uploadImage(cardBack) : null;
 
     await this.updateUserImages(id, pictureUrl, cardFrontUrl, cardBackUrl);
 

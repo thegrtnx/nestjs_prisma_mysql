@@ -31,10 +31,18 @@ export class UsersController {
     { name: 'cardFront', maxCount: 1 },
     { name: 'cardBack', maxCount: 1 },
   ]))
-  async create(@Body() createUserDto: CreateUserDto, @UploadedFiles() files: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }) {
-    const { picture, cardFront, cardBack } = files;
-    return this.usersService.create(createUserDto, picture[0], cardFront[0], cardBack[0]);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFiles() files?: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }
+  ) {
+    if (files && files.picture && files.cardFront && files.cardBack) {
+      const { picture, cardFront, cardBack } = files;
+      return this.usersService.create(createUserDto, picture[0], cardFront[0], cardBack[0]);
+    } else {
+      return this.usersService.create(createUserDto, null, null, null);
+    }
   }
+  
 
   @Get('')
   @ApiOperation({ summary: 'Endpoint for getting all users' })
