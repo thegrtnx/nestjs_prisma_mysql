@@ -7,54 +7,64 @@ import {
   Param,
   Delete,
   UseGuards,
+  UploadedFiles,
+  UseInterceptors,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { GuarantorService } from './guarantor.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
-import { Me } from 'src/auth/guards/me/me.guard';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Guarantors')
 @Controller('guarantor')
 export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
 
-  @Post('signup')
+  @Post('create/:userId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('defaultBearerAuth')
-  @ApiOperation({ summary: 'Endpoint for creating guarantor' })
-  create(@Me() me, @Body() createGuarantorDto: CreateGuarantorDto) {
-    return this.guarantorService.create({
-      ...createGuarantorDto,
-      UserID: me.user.id,
-    });
+  @ApiOperation({ summary: 'Create guarantors for a specific user' })
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'pictures', maxCount: 3 },
+    { name: 'cardFronts', maxCount: 3 },
+    { name: 'cardBacks', maxCount: 3 },
+  ]))
+  async createForUser(
+    @Param('userId', ParseUUIDPipe) userId: string,
+    @Body() guarantors: CreateGuarantorDto[],
+    @UploadedFiles() files: { pictures?: Express.Multer.File[], cardFronts?: Express.Multer.File[], cardBacks?: Express.Multer.File[] }
+  ) {
+    return this.guarantorService.createForUser(userId, guarantors, files.pictures, files.cardFronts, files.cardBacks);
   }
 
   @Get('')
-  @ApiOperation({ summary: 'Endpoint for getting all guarantors' })
+  @ApiOperation({ summary: 'Get all guarantors' })
   findAll() {
     return this.guarantorService.findAll();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Endpoint for getting a guarantor by id' })
-  findOne(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Get a guarantor by ID' })
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.guarantorService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Endpoint for updating a guarantor by id' })
-  update(
-    @Param('id') id: string,
-    @Body() updateGuarantorDto: UpdateGuarantorDto,
-  ) {
+  @ApiOperation({ summary: 'Update a guarantor by ID' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('defaultBearerAuth')
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateGuarantorDto: UpdateGuarantorDto) {
     return this.guarantorService.update(id, updateGuarantorDto);
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Endpoint for deleting a guarantor by id' })
-  remove(@Param('id') id: string) {
+  @ApiOperation({ summary: 'Delete a guarantor by ID' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('defaultBearerAuth')
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.guarantorService.remove(id);
   }
 }

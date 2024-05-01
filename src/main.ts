@@ -26,7 +26,11 @@ async function bootstrap() {
     .setTitle('Your API Title')
     .setDescription('Your API description')
     .setVersion('1.0')
-    .addServer('https://api.omegasupportaccessltd.com/', 'Production')
+
+    .addServer('http://localhost:3000', 'Local environment')
+    //.addServer('https://staging.yourapi.com', 'Staging')
+    // .addServer('https://api.omegasupportaccessltd.com/', 'Production')
+    //.addServer('https://api.omegasupportaccessltd.com/', 'Production')
     //.addServer('http://localhost:3001', 'Local environment')
     .addBearerAuth(undefined, 'defaultBearerAuth')
     .addBearerAuth(

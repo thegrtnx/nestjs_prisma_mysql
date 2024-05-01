@@ -6,26 +6,35 @@ import {
   Patch,
   Param,
   Delete,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Customers')
 @Controller('customer')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('signup')
+  @Post('')
   @ApiOperation({ summary: 'Endpoint for creating user' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'picture', maxCount: 1 },
+    { name: 'cardFront', maxCount: 1 },
+    { name: 'cardBack', maxCount: 1 },
+  ]))
+  async create(@Body() createUserDto: CreateUserDto, @UploadedFiles() files: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }) {
+    const { picture, cardFront, cardBack } = files;
+    return this.usersService.create(createUserDto, picture[0], cardFront[0], cardBack[0]);
   }
 
   @Get('')
   @ApiOperation({ summary: 'Endpoint for getting all users' })
-  findAll() {
+  async findAll() {
     return this.usersService.findAll();
   }
 
@@ -33,7 +42,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Endpoint for getting a user by id',
   })
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
 
@@ -41,7 +50,7 @@ export class UsersController {
   @ApiOperation({
     summary: 'Endpoint for getting a user by email',
   })
-  findOneByEmail(@Param('email') email: string) {
+  async findOneByEmail(@Param('email') email: string) {
     return this.usersService.findOneByEmail(email);
   }
 
@@ -49,15 +58,21 @@ export class UsersController {
   @ApiOperation({
     summary: 'Endpoint for updating a user by id',
   })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  @UseInterceptors(FileFieldsInterceptor([
+    { name: 'picture', maxCount: 1 },
+    { name: 'cardFront', maxCount: 1 },
+    { name: 'cardBack', maxCount: 1 },
+  ]))
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @UploadedFiles() files: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }) {
+    const { picture, cardFront, cardBack } = files;
+    return this.usersService.update(id, updateUserDto, picture[0], cardFront[0], cardBack[0]);
   }
 
   @Delete(':id')
   @ApiOperation({
     summary: 'Endpoint for deleting a user by id',
   })
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
 }
