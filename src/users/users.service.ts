@@ -29,7 +29,13 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.users.findMany({ select: { id: true, name: true, email: true } });
+    return this.prisma.users.findMany({ select: { id: true, name: true, email: true } }).then((users) => {
+      return new handleResponse(
+        HttpStatus.OK,
+        'All users fetched successfully',
+        users,
+      );
+    });
   }
 
   findOne(id: string) {
