@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from 'src/util/cloudinaryUtil';
+import { UserRole } from '.prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -19,21 +20,25 @@ export class UsersService {
     cardBack: any,
   ) {
     const { ...userData } = createUserDto;
-    const user = await this.prisma.users.create({ data: userData });
+    const user = await this.prisma.users.create({
+      data: {
+        ...userData,
+        role: UserRole.User,
+      },
+    });
 
-    const pictureUrl = await this.cloudinaryService.uploadImage(picture);
-    const cardFrontUrl = await this.cloudinaryService.uploadImage(cardFront);
-    const cardBackUrl = await this.cloudinaryService.uploadImage(cardBack);
+    const pictureUrl = picture ? await this.cloudinaryService.uploadImage(picture) : null;
+    const cardFrontUrl = cardFront ? await this.cloudinaryService.uploadImage(cardFront) : null;
+    const cardBackUrl = cardBack ? await this.cloudinaryService.uploadImage(cardBack) : null;
 
     await this.updateUserImages(user.id, pictureUrl, cardFrontUrl, cardBackUrl);
 
     return new handleResponse(HttpStatus.OK, 'User Created Successfully', {
       ...user,
-      password: undefined,
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.users
       .findMany({
         select: {
@@ -54,7 +59,7 @@ export class UsersService {
       });
   }
 
-  findOne(id: string) {
+  async findOne(id: string) {
     return this.prisma.users.findUniqueOrThrow({ where: { id } });
   }
 
@@ -72,15 +77,18 @@ export class UsersService {
     cardFront: any,
     cardBack: any,
   ) {
-    const { ...userData } = updateUserDto;
-    const user = await this.prisma.users.update({
-      data: userData,
-      where: { id },
-    });
+    const { role, ...userData } = updateUserDto;
+  const user = await this.prisma.users.update({
+    data: {
+      ...userData,
+      role: role ? role : UserRole.User,
+    },
+    where: { id },
+  });
 
-    const pictureUrl = await this.cloudinaryService.uploadImage(picture);
-    const cardFrontUrl = await this.cloudinaryService.uploadImage(cardFront);
-    const cardBackUrl = await this.cloudinaryService.uploadImage(cardBack);
+  const pictureUrl = picture ? await this.cloudinaryService.uploadImage(picture) : null;
+  const cardFrontUrl = cardFront ? await this.cloudinaryService.uploadImage(cardFront) : null;
+  const cardBackUrl = cardBack ? await this.cloudinaryService.uploadImage(cardBack) : null;
 
     await this.updateUserImages(id, pictureUrl, cardFrontUrl, cardBackUrl);
 
