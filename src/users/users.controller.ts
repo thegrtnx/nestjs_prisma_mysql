@@ -8,18 +8,14 @@ import {
   Delete,
   UploadedFiles,
   UseInterceptors,
-  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Customers')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth('defaultBearerAuth')
 @Controller('customer')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -31,18 +27,10 @@ export class UsersController {
     { name: 'cardFront', maxCount: 1 },
     { name: 'cardBack', maxCount: 1 },
   ]))
-  async create(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFiles() files?: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }
-  ) {
-    if (files && files.picture && files.cardFront && files.cardBack) {
-      const { picture, cardFront, cardBack } = files;
-      return this.usersService.create(createUserDto, picture[0], cardFront[0], cardBack[0]);
-    } else {
-      return this.usersService.create(createUserDto, null, null, null);
-    }
+  async create(@Body() createUserDto: CreateUserDto, @UploadedFiles() files: { picture?: Express.Multer.File, cardFront?: Express.Multer.File, cardBack?: Express.Multer.File }) {
+    const { picture, cardFront, cardBack } = files;
+    return this.usersService.create(createUserDto, picture[0], cardFront[0], cardBack[0]);
   }
-  
 
   @Get('')
   @ApiOperation({ summary: 'Endpoint for getting all users' })
