@@ -6,7 +6,7 @@ import { AppModule } from './app/app.module';
 import { GlobalExceptionFilter } from './util/errorHandler';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.enableCors({
     origin: '*',
@@ -27,10 +27,8 @@ async function bootstrap() {
     .setDescription('Your API description')
     .setVersion('1.0')
 
-    .addServer('http://localhost:3000', 'Local environment')
-    //.addServer('https://staging.yourapi.com', 'Staging')
-    // .addServer('https://api.omegasupportaccessltd.com/', 'Production')
-    //.addServer('https://api.omegasupportaccessltd.com/', 'Production')
+    //.addServer('http://localhost:3001', 'Local environment')
+    .addServer('https://api.omegasupportaccessltd.com', 'Production')
     //.addServer('http://localhost:3001', 'Local environment')
     .addBearerAuth(undefined, 'defaultBearerAuth')
     .addBearerAuth(

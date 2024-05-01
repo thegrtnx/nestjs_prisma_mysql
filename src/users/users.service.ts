@@ -9,10 +9,15 @@ import { CloudinaryService } from 'src/util/cloudinaryUtil';
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createUserDto: CreateUserDto, picture: any, cardFront: any, cardBack: any) {
+  async create(
+    createUserDto: CreateUserDto,
+    picture: any,
+    cardFront: any,
+    cardBack: any,
+  ) {
     const { ...userData } = createUserDto;
     const user = await this.prisma.users.create({ data: userData });
 
@@ -21,7 +26,7 @@ export class UsersService {
     const cardBackUrl = await this.cloudinaryService.uploadImage(cardBack);
 
     await this.updateUserImages(user.id, pictureUrl, cardFrontUrl, cardBackUrl);
-    
+
     return new handleResponse(HttpStatus.OK, 'User Created Successfully', {
       ...user,
       password: undefined,
@@ -29,13 +34,24 @@ export class UsersService {
   }
 
   findAll() {
-    return this.prisma.users.findMany({ select: { id: true, name: true, email: true } }).then((users) => {
-      return new handleResponse(
-        HttpStatus.OK,
-        'All users fetched successfully',
-        users,
-      );
-    });
+    return this.prisma.users
+      .findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          number: true,
+          address: true,
+          membership_fee: true,
+        },
+      })
+      .then((users) => {
+        return new handleResponse(
+          HttpStatus.OK,
+          'All users fetched successfully',
+          users,
+        );
+      });
   }
 
   findOne(id: string) {
@@ -49,16 +65,25 @@ export class UsersService {
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, picture: any, cardFront: any, cardBack: any) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    picture: any,
+    cardFront: any,
+    cardBack: any,
+  ) {
     const { ...userData } = updateUserDto;
-    const user = await this.prisma.users.update({ data: userData, where: { id } });
+    const user = await this.prisma.users.update({
+      data: userData,
+      where: { id },
+    });
 
     const pictureUrl = await this.cloudinaryService.uploadImage(picture);
     const cardFrontUrl = await this.cloudinaryService.uploadImage(cardFront);
     const cardBackUrl = await this.cloudinaryService.uploadImage(cardBack);
 
     await this.updateUserImages(id, pictureUrl, cardFrontUrl, cardBackUrl);
-    
+
     return user;
   }
 
@@ -66,21 +91,26 @@ export class UsersService {
     return this.prisma.users.delete({ where: { id } });
   }
 
-  private async updateUserImages(id: string, pictureUrl: string, cardFrontUrl: string, cardBackUrl: string) {
+  private async updateUserImages(
+    id: string,
+    pictureUrl: string,
+    cardFrontUrl: string,
+    cardBackUrl: string,
+  ) {
     const data: Record<string, any> = {};
-    
+
     if (pictureUrl) {
       data.pictureUrl = pictureUrl;
     }
-  
+
     if (cardFrontUrl) {
       data.cardFrontUrl = cardFrontUrl;
     }
-  
+
     if (cardBackUrl) {
       data.cardBackUrl = cardBackUrl;
     }
-  
+
     await this.prisma.users.update({
       where: { id },
       data,
