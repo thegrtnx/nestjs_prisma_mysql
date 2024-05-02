@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
 import { CloudinaryService } from 'src/util/cloudinaryUtil';
+import { Guarantors } from '@prisma/client';
 
 @Injectable()
 export class GuarantorService {
@@ -44,6 +45,14 @@ export class GuarantorService {
     } catch (error) {
       throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
     }
+  }
+
+  async getGuarantorsByUserId(userId: string): Promise<Guarantors[]> {
+    return this.prisma.guarantors.findMany({
+      where: {
+        UserID: userId,
+      },
+    });
   }
 
   findAll() {

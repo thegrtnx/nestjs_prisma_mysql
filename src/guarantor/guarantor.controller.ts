@@ -38,19 +38,33 @@ export class GuarantorController {
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() guarantors: CreateGuarantorDto[],
     @UploadedFiles()
-    files: {
+    files?: {
       pictures?: Express.Multer.File[];
       cardFronts?: Express.Multer.File[];
       cardBacks?: Express.Multer.File[];
     },
   ) {
-    return this.guarantorService.createForUser(
-      userId,
-      guarantors,
-      files.pictures,
-      files.cardFronts,
-      files.cardBacks,
-    );
+    if (files && files.pictures && files.cardFronts && files.cardBacks) {
+      return this.guarantorService.createForUser(
+        userId,
+        guarantors,
+        files.pictures,
+        files.cardFronts,
+        files.cardBacks,
+      );
+    } else {
+      return this.guarantorService.createForUser(userId, guarantors, [], [], []);
+    }
+  }
+
+  @Get(':userId')
+  async getGuarantorsByUserId(@Param('userId') userId: string) {
+    try {
+      const guarantors = await this.guarantorService.getGuarantorsByUserId(userId);
+      return { success: true, data: guarantors };
+    } catch (error) {
+      return { success: false, message: error.message };
+    }
   }
 
   @Get('')
