@@ -26,7 +26,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: 'Endpoint for fetching all admins' })
-  @ApiBearerAuth('defaultBearerAuth')
+  @ApiBearerAuth('Authorization')
   @UseGuards(JwtAuthGuard)
   @Get('')
   findAll() {
@@ -34,7 +34,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: 'Endpoint for getting a specific admin' })
-  @ApiBearerAuth('defaultBearerAuth')
+  @ApiBearerAuth('Authorization')
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -42,7 +42,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: 'Endpoint for updating an admin' })
-  @ApiBearerAuth('defaultBearerAuth')
+  @ApiBearerAuth('Authorization')
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAdminDto: UpdateAdminDto) {
@@ -50,7 +50,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: 'Endpoint for deleting an admin' })
-  @ApiBearerAuth('defaultBearerAuth')
+  @ApiBearerAuth('Authorization')
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {

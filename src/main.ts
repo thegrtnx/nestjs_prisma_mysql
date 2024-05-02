@@ -30,10 +30,9 @@ async function bootstrap() {
     //.addServer('http://localhost:3001', 'Local environment')
     //.addServer('https://api.omegasupportaccessltd.com', 'Production')
     .addServer('http://localhost:3001', 'Local environment')
-    .addBearerAuth(undefined, 'defaultBearerAuth')
     .addBearerAuth(
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
-      'authorization',
+      'Authorization',
     )
     .addTag('Admin', 'Endpoint for Admin functions')
     .addTag('App', 'Endpoint for server test')

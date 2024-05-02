@@ -47,6 +47,11 @@ export class UsersService {
   findAll() {
     return this.prisma.users
       .findMany({
+        where: {
+          role: {
+            not: 'Admin',
+          },
+        },
         select: {
           id: true,
           name: true,

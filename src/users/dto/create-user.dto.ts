@@ -45,9 +45,9 @@ export class CreateUserDto {
   @IsOptional()
   password: string;
 
-  @ApiProperty({ example: 'User', required: true })
-  @IsNotEmpty()
+  @ApiProperty({ example: 'User', required: false })
   @MinLength(3)
+  @IsOptional()
   role: UserRole;
 
   @ApiProperty({ example: 300, required: true })

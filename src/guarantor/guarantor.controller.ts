@@ -20,7 +20,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Guarantors')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth('defaultBearerAuth')
+@ApiBearerAuth('Authorization')
 @Controller('guarantor')
 export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
