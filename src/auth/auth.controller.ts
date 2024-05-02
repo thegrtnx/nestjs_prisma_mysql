@@ -16,7 +16,7 @@ export class AuthController {
     return req.user;
   }
 
-  @ApiBearerAuth('defaultBearerAuth')
+  @ApiBearerAuth('Authorization')
   @ApiOperation({ summary: 'Endpoint for viewing user profile' })
   @Get('profile')
   @UseGuards(JwtAuthGuard)
