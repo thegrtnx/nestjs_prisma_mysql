@@ -83,6 +83,7 @@ export class UsersService {
     cardFront: any,
     cardBack: any,
   ) {
+    const { role, ...userData } = updateUserDto;
     const user = await this.prisma.users.update({
       data: {
         ...userData,
