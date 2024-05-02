@@ -4,7 +4,7 @@ CREATE TABLE `Users` (
     `name` VARCHAR(191) NOT NULL,
     `number` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NULL,
-    `role` VARCHAR(191) NOT NULL DEFAULT 'User',
+    `role` ENUM('User', 'Admin') NOT NULL DEFAULT 'User',
     `email` VARCHAR(191) NOT NULL,
     `address` VARCHAR(191) NULL,
     `membership_fee` VARCHAR(191) NOT NULL DEFAULT '0',

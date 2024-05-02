@@ -19,25 +19,38 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Guarantors')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('defaultBearerAuth')
 @Controller('guarantor')
 export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
 
   @Post('create/:userId')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth('defaultBearerAuth')
   @ApiOperation({ summary: 'Create guarantors for a specific user' })
-  @UseInterceptors(FileFieldsInterceptor([
-    { name: 'pictures', maxCount: 3 },
-    { name: 'cardFronts', maxCount: 3 },
-    { name: 'cardBacks', maxCount: 3 },
-  ]))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'pictures', maxCount: 3 },
+      { name: 'cardFronts', maxCount: 3 },
+      { name: 'cardBacks', maxCount: 3 },
+    ]),
+  )
   async createForUser(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() guarantors: CreateGuarantorDto[],
-    @UploadedFiles() files: { pictures?: Express.Multer.File[], cardFronts?: Express.Multer.File[], cardBacks?: Express.Multer.File[] }
+    @UploadedFiles()
+    files: {
+      pictures?: Express.Multer.File[];
+      cardFronts?: Express.Multer.File[];
+      cardBacks?: Express.Multer.File[];
+    },
   ) {
-    return this.guarantorService.createForUser(userId, guarantors, files.pictures, files.cardFronts, files.cardBacks);
+    return this.guarantorService.createForUser(
+      userId,
+      guarantors,
+      files.pictures,
+      files.cardFronts,
+      files.cardBacks,
+    );
   }
 
   @Get('')
@@ -56,7 +69,10 @@ export class GuarantorController {
   @ApiOperation({ summary: 'Update a guarantor by ID' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('defaultBearerAuth')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateGuarantorDto: UpdateGuarantorDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateGuarantorDto: UpdateGuarantorDto,
+  ) {
     return this.guarantorService.update(id, updateGuarantorDto);
   }
 

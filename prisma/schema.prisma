@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -18,7 +18,7 @@ model Users {
   name           String
   number         String
   password       String?
-  role           String       @default("User")
+  role           UserRole     @default(User)
   email          String       @unique
   address        String?
   membership_fee String       @default("0")
@@ -40,4 +40,9 @@ model Guarantors {
   cardBackUrl  String?
   UserID       String
   guranted_for Users   @relation(fields: [UserID], references: [id])
+}
+
+enum UserRole {
+  User
+  Admin
 }
