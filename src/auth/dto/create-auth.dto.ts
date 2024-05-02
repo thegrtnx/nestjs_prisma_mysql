@@ -5,7 +5,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class AuthUserDto extends PartialType(CreateUserDto) {
   @ApiProperty({
-    example: 'abc@xyz.com',
+    example: 'admin@omega.com',
     required: true,
   })
   @IsEmail()
@@ -14,7 +14,7 @@ export class AuthUserDto extends PartialType(CreateUserDto) {
   email: string;
 
   @ApiProperty({
-    example: '****',
+    example: 'admin',
     required: false,
   })
   @IsString()
