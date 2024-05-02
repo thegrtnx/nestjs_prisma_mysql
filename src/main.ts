@@ -35,6 +35,7 @@ async function bootstrap() {
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'authorization',
     )
+    .addTag('Admin', 'Endpoint for Admin functions')
     .addTag('App', 'Endpoint for server test')
     .addTag('Auth', 'Endpoint for authentication')
     .addTag('Customers', 'Endpoint for customers')
