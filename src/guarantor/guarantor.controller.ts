@@ -34,7 +34,7 @@ export class GuarantorController {
       { name: 'cardBacks', maxCount: 3 },
     ]),
   )
-  async createForUser(
+  async createForGuarantors(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() guarantors: CreateGuarantorDto[],
     @UploadedFiles()
@@ -45,7 +45,7 @@ export class GuarantorController {
     },
   ) {
     if (files && files.pictures && files.cardFronts && files.cardBacks) {
-      return this.guarantorService.createForUser(
+      return this.guarantorService.createForGuarantors(
         userId,
         guarantors,
         files.pictures,
@@ -53,7 +53,7 @@ export class GuarantorController {
         files.cardBacks,
       );
     } else {
-      return this.guarantorService.createForUser(userId, guarantors, [], [], []);
+      return this.guarantorService.createForGuarantors(userId, guarantors, [], [], []);
     }
   }
 
