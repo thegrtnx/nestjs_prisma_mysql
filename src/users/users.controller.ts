@@ -92,20 +92,24 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFiles()
-    files: {
+    files?: {
       picture?: Express.Multer.File;
       cardFront?: Express.Multer.File;
       cardBack?: Express.Multer.File;
     },
   ) {
-    const { picture, cardFront, cardBack } = files;
-    return this.usersService.update(
-      id,
-      updateUserDto,
-      picture[0],
-      cardFront[0],
-      cardBack[0],
-    );
+    if (files && files.picture && files.cardFront && files.cardBack) {
+      const { picture, cardFront, cardBack } = files;
+      return this.usersService.update(
+        id,
+        updateUserDto,
+        picture[0],
+        cardFront[0],
+        cardBack[0],
+      );
+    } else {
+      return this.usersService.update(id, updateUserDto, null, null, null);
+    }
   }
 
   @Delete(':id')
