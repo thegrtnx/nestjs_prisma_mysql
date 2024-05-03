@@ -7,6 +7,7 @@ import { GuarantorModule } from 'src/guarantor/guarantor.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdminModule } from 'src/admin/admin.module';
 import { LoanModule } from 'src/loan/loan.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { LoanModule } from 'src/loan/loan.module';
     AuthModule,
     AdminModule,
     LoanModule,
+    CloudinaryModule,
     PrismaModule,
   ],
   controllers: [AppController],

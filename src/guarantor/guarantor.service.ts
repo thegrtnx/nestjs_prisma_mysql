@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGuarantorDto } from './dto/create-guarantor.dto';
 import { UpdateGuarantorDto } from './dto/update-guarantor.dto';
-import { CloudinaryService } from 'src/util/cloudinaryUtil';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { Guarantors } from '@prisma/client';
 
 @Injectable()
@@ -12,14 +12,31 @@ export class GuarantorService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  async createForUser(userId: string, guarantors: CreateGuarantorDto[], pictures: Express.Multer.File[], cardFronts: Express.Multer.File[], cardBacks: Express.Multer.File[]) {
-
+  async createForGuarantors(
+    userId: string,
+    guarantors: CreateGuarantorDto[],
+    pictures: Express.Multer.File[],
+    cardFronts: Express.Multer.File[],
+    cardBacks: Express.Multer.File[],
+  ) {
     const createdGuarantors = await Promise.all(guarantors.map(async (guarantor, index) => {
       const { name, number, email, address } = guarantor;
-      
-      const pictureUrl = pictures[index] ? await this.uploadImageToCloudinary(pictures[index]) : null;
-      const cardFrontUrl = cardFronts[index] ? await this.uploadImageToCloudinary(cardFronts[index]) : null;
-      const cardBackUrl = cardBacks[index] ? await this.uploadImageToCloudinary(cardBacks[index]) : null;
+
+      let pictureUrl: string | null = null;
+      let cardFrontUrl: string | null = null;
+      let cardBackUrl: string | null = null;
+
+      if (pictures[index]) {
+        pictureUrl = await this.uploadImageToCloudinary(pictures[index]);
+      }
+
+      if (cardFronts[index]) {
+        cardFrontUrl = await this.uploadImageToCloudinary(cardFronts[index]);
+      }
+
+      if (cardBacks[index]) {
+        cardBackUrl = await this.uploadImageToCloudinary(cardBacks[index]);
+      }
 
       return this.prisma.guarantors.create({
         data: {
@@ -37,16 +54,7 @@ export class GuarantorService {
 
     return createdGuarantors;
   }
-
-  async uploadImageToCloudinary(file: Express.Multer.File): Promise<string> {
-    try {
-      const imageUrl = await this.cloudinaryService.uploadImage(file);
-      return imageUrl;
-    } catch (error) {
-      throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
-    }
-  }
-
+  
   async getGuarantorsByUserId(userId: string): Promise<Guarantors[]> {
     return this.prisma.guarantors.findMany({
       where: {
@@ -54,23 +62,36 @@ export class GuarantorService {
       },
     });
   }
-
+  
   findAll() {
     return this.prisma.guarantors.findMany();
   }
-
+  
   findOne(id: string) {
     return this.prisma.guarantors.findUnique({ where: { id } });
   }
-
+  
   update(id: string, updateGuarantorDto: UpdateGuarantorDto) {
     return this.prisma.guarantors.update({
       data: updateGuarantorDto,
       where: { id },
     });
   }
-
+  
   remove(id: string) {
     return this.prisma.guarantors.delete({ where: { id } });
   }
+
+  async uploadImageToCloudinary(file: any): Promise<string | null> {
+    try {
+      if (!file) return null;
+
+      const imageUrl = await this.cloudinaryService.uploadImage(file);
+
+      return imageUrl.secure_url;
+    } catch (error) {
+      throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
+    }
+  }
+
 }

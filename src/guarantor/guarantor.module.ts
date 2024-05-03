@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { GuarantorService } from './guarantor.service';
 import { GuarantorController } from './guarantor.controller';
-import { CloudinaryService } from 'src/util/cloudinaryUtil';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Module({
   controllers: [GuarantorController],

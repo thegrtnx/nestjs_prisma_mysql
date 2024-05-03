@@ -3,7 +3,7 @@ import { handleResponse } from 'src/util/responseHandler';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CloudinaryService } from 'src/util/cloudinaryUtil';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UserRole } from '.prisma/client';
 
 @Injectable()
@@ -15,9 +15,9 @@ export class UsersService {
 
   async create(
     createUserDto: CreateUserDto,
-    picture: any,
-    cardFront: any,
-    cardBack: any,
+    picture: Express.Multer.File,
+    cardFront: Express.Multer.File,
+    cardBack: Express.Multer.File,
   ) {
     const { ...userData } = createUserDto;
     const user = await this.prisma.users.create({
@@ -26,21 +26,30 @@ export class UsersService {
         role: UserRole.User,
       },
     });
-
-    const pictureUrl = picture
-      ? await this.cloudinaryService.uploadImage(picture)
-      : null;
-    const cardFrontUrl = cardFront
-      ? await this.cloudinaryService.uploadImage(cardFront)
-      : null;
-    const cardBackUrl = cardBack
-      ? await this.cloudinaryService.uploadImage(cardBack)
-      : null;
-
+  
+    let pictureUrl: string | null = null;
+    let cardFrontUrl: string | null = null;
+    let cardBackUrl: string | null = null;
+  
+    if (picture) {
+      pictureUrl = await this.uploadImageToCloudinary(picture);
+    }
+  
+    if (cardFront) {
+      cardFrontUrl = await this.uploadImageToCloudinary(cardFront);
+    }
+  
+    if (cardBack) {
+      cardBackUrl = await this.uploadImageToCloudinary(cardBack);
+    }
+  
     await this.updateUserImages(user.id, pictureUrl, cardFrontUrl, cardBackUrl);
-
+  
     return new handleResponse(HttpStatus.OK, 'User Created Successfully', {
       ...user,
+      pictureUrl,
+      cardFrontUrl,
+      cardBackUrl,
     });
   }
 
@@ -59,6 +68,9 @@ export class UsersService {
           number: true,
           address: true,
           membership_fee: true,
+          pictureUrl: true,
+          cardFrontUrl: true,
+          cardBackUrl: true,
         },
       })
       .then((users) => {
@@ -98,13 +110,13 @@ export class UsersService {
     });
 
     const pictureUrl = picture
-      ? await this.cloudinaryService.uploadImage(picture)
+      ? await this.uploadImageToCloudinary(picture)
       : null;
     const cardFrontUrl = cardFront
-      ? await this.cloudinaryService.uploadImage(cardFront)
+      ? await this.uploadImageToCloudinary(cardFront)
       : null;
     const cardBackUrl = cardBack
-      ? await this.cloudinaryService.uploadImage(cardBack)
+      ? await this.uploadImageToCloudinary(cardBack)
       : null;
 
     await this.updateUserImages(id, pictureUrl, cardFrontUrl, cardBackUrl);
@@ -123,22 +135,36 @@ export class UsersService {
     cardBackUrl: string,
   ) {
     const data: Record<string, any> = {};
-
+  
     if (pictureUrl) {
       data.pictureUrl = pictureUrl;
     }
-
+  
     if (cardFrontUrl) {
       data.cardFrontUrl = cardFrontUrl;
     }
-
+  
     if (cardBackUrl) {
       data.cardBackUrl = cardBackUrl;
     }
-
+  
     await this.prisma.users.update({
       where: { id },
       data,
     });
+  }
+
+  async uploadImageToCloudinary(file: any): Promise<string | null> {
+    try {
+      if (!file) return null;
+      // console.log('Uploading file to Cloudinary:', file);
+
+      const imageUrl = await this.cloudinaryService.uploadImage(file);
+      // console.log('Uploaded image URL:', imageUrl);
+
+      return imageUrl.secure_url;
+    } catch (error) {
+      throw new Error(`Failed to upload image to Cloudinary: ${error.message}`);
+    }
   }
 }
