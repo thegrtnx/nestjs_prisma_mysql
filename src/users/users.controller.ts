@@ -84,17 +84,17 @@ export class UsersController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFiles()
-    files?: {
-      cardImage?: Express.Multer.File;
-      photograph?: Express.Multer.File;
+    files: {
+      cardImage?: Express.Multer.File[];
+      photograph?: Express.Multer.File[];
     },
   ) {
-    const { cardImage, photograph } = files || {};
+    const { cardImage, photograph } = files;
     return this.usersService.update(
       id,
       updateUserDto,
-      cardImage || null,
-      photograph || null,
+      cardImage?.[0],
+      photograph?.[0],
     );
   }
 
