@@ -35,7 +35,6 @@ model Users {
 model Guarantors {
   id                  String  @id @default(uuid())
   name                String
-  number              String
   email               String  @unique
   address             String
   cardType            String?
