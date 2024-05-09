@@ -29,7 +29,7 @@ async function bootstrap() {
 
     //.addServer('http://localhost:3001', 'Local environment')
     .addServer('https://api.omegasupportaccessltd.com', 'Production')
-    //.addServer('http://localhost:3001', 'Local environment')
+    .addServer('http://localhost:3001', 'Local environment')
     .addBearerAuth(
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'Authorization',
