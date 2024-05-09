@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength, IsNotEmpty, IsEmail } from 'class-validator';
+import {
+  IsString,
+  MinLength,
+  IsNotEmpty,
+  IsEmail,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateGuarantorDto {
   @ApiProperty({
@@ -36,6 +42,54 @@ export class CreateGuarantorDto {
   @IsNotEmpty()
   @MinLength(3)
   address: string;
+
+  @ApiProperty({
+    example: 'Company XYZ',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  placeOfWork: string;
+
+  @ApiProperty({
+    example: '123 Business St',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  addressOfBusiness: string;
+
+  @ApiProperty({
+    example: '456 Home St',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  homeAddress: string;
+
+  @ApiProperty({
+    example: '1234567890',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  telephone1: string;
+
+  @ApiProperty({
+    example: '0987654321',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  telephone2: string;
+
+  @ApiProperty({
+    example: 'Manager',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  positionHeld: string;
 
   @IsString()
   @IsNotEmpty()
