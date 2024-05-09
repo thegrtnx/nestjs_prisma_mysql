@@ -18,15 +18,6 @@ export class CreateGuarantorDto {
   name: string;
 
   @ApiProperty({
-    example: '+234081031719102',
-    required: true,
-  })
-  @MinLength(3)
-  @IsString()
-  @IsNotEmpty()
-  number: string;
-
-  @ApiProperty({
     example: 'abc@xyz.com',
     required: true,
   })
@@ -68,7 +59,7 @@ export class CreateGuarantorDto {
   homeAddress: string;
 
   @ApiProperty({
-    example: '1234567890',
+    example: '+2341234567890',
     required: false,
   })
   @IsString()
@@ -76,7 +67,7 @@ export class CreateGuarantorDto {
   telephone1: string;
 
   @ApiProperty({
-    example: '0987654321',
+    example: '+2349087654321',
     required: false,
   })
   @IsString()
@@ -90,8 +81,4 @@ export class CreateGuarantorDto {
   @IsString()
   @IsOptional()
   positionHeld: string;
-
-  @IsString()
-  @IsNotEmpty()
-  UserID: string;
 }

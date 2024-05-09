@@ -22,7 +22,6 @@ export class GuarantorService {
       guarantors.map(async (guarantor, index) => {
         const {
           name,
-          number,
           email,
           address,
           placeOfWork,
@@ -32,22 +31,21 @@ export class GuarantorService {
           telephone2,
           positionHeld,
         } = guarantor;
-
+  
         let cardUrl: string | null = null;
         let photographUrl: string | null = null;
-
+  
         if (cardImages[index]) {
           cardUrl = await this.uploadImageToCloudinary(cardImages[index]);
         }
-
+  
         if (photographs[index]) {
           photographUrl = await this.uploadImageToCloudinary(photographs[index]);
         }
-
+  
         return this.prisma.guarantors.create({
           data: {
             name,
-            number,
             email,
             address,
             placeOfWork,
@@ -58,12 +56,16 @@ export class GuarantorService {
             positionHeld,
             cardUrl,
             photographUrl,
-            UserID: userId,
+            guranted_for: {
+              connect: {
+                id: userId,
+              },
+            },
           },
         });
       }),
     );
-
+  
     return createdGuarantors;
   }
 
