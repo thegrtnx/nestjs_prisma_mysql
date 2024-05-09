@@ -28,21 +28,24 @@ export class UsersController {
   @ApiOperation({ summary: 'Endpoint for creating user' })
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'picture', maxCount: 1 },
-      { name: 'cardFront', maxCount: 1 },
-      { name: 'cardBack', maxCount: 1 },
+      { name: 'cardImage', maxCount: 1 },
+      { name: 'photograph', maxCount: 1 },
     ]),
   )
   async create(
     @Body() createUserDto: CreateUserDto,
-    @UploadedFiles() files: {
-      picture?: Express.Multer.File[];
-      cardFront?: Express.Multer.File[];
-      cardBack?: Express.Multer.File[];
+    @UploadedFiles()
+    files: {
+      cardImage?: Express.Multer.File[];
+      photograph?: Express.Multer.File[];
     },
   ) {
-    const { picture, cardFront, cardBack } = files;
-    return this.usersService.create(createUserDto, picture?.[0], cardFront?.[0], cardBack?.[0]);
+    const { cardImage, photograph } = files;
+    return this.usersService.create(
+      createUserDto,
+      cardImage?.[0],
+      photograph?.[0],
+    );
   }
 
   @Get('')
@@ -73,9 +76,8 @@ export class UsersController {
   })
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'picture', maxCount: 1 },
-      { name: 'cardFront', maxCount: 1 },
-      { name: 'cardBack', maxCount: 1 },
+      { name: 'cardImage', maxCount: 1 },
+      { name: 'photograph', maxCount: 1 },
     ]),
   )
   async update(
@@ -83,23 +85,17 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFiles()
     files?: {
-      picture?: Express.Multer.File;
-      cardFront?: Express.Multer.File;
-      cardBack?: Express.Multer.File;
+      cardImage?: Express.Multer.File;
+      photograph?: Express.Multer.File;
     },
   ) {
-    if (files && files.picture && files.cardFront && files.cardBack) {
-      const { picture, cardFront, cardBack } = files;
-      return this.usersService.update(
-        id,
-        updateUserDto,
-        picture[0],
-        cardFront[0],
-        cardBack[0],
-      );
-    } else {
-      return this.usersService.update(id, updateUserDto, null, null, null);
-    }
+    const { cardImage, photograph } = files || {};
+    return this.usersService.update(
+      id,
+      updateUserDto,
+      cardImage || null,
+      photograph || null,
+    );
   }
 
   @Delete(':id')

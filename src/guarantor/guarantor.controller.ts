@@ -29,9 +29,8 @@ export class GuarantorController {
   @ApiOperation({ summary: 'Create guarantors for a specific user' })
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'pictures', maxCount: 3 },
-      { name: 'cardFronts', maxCount: 3 },
-      { name: 'cardBacks', maxCount: 3 },
+      { name: 'cardImages', maxCount: 2 },
+      { name: 'photographs', maxCount: 2 },
     ]),
   )
   async createForGuarantors(
@@ -39,22 +38,12 @@ export class GuarantorController {
     @Body() guarantors: CreateGuarantorDto[],
     @UploadedFiles()
     files?: {
-      pictures?: Express.Multer.File[];
-      cardFronts?: Express.Multer.File[];
-      cardBacks?: Express.Multer.File[];
+      cardImages?: Express.Multer.File[];
+      photographs?: Express.Multer.File[];
     },
   ) {
-    if (files && files.pictures && files.cardFronts && files.cardBacks) {
-      return this.guarantorService.createForGuarantors(
-        userId,
-        guarantors,
-        files.pictures,
-        files.cardFronts,
-        files.cardBacks,
-      );
-    } else {
-      return this.guarantorService.createForGuarantors(userId, guarantors, [], [], []);
-    }
+    const { cardImages, photographs } = files || { cardImages: [], photographs: [] };
+    return this.guarantorService.createForGuarantors(userId, guarantors, cardImages, photographs);
   }
 
   @Get(':userId')
@@ -83,10 +72,7 @@ export class GuarantorController {
   @ApiOperation({ summary: 'Update a guarantor by ID' })
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('defaultBearerAuth')
-  update(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Body() updateGuarantorDto: UpdateGuarantorDto,
-  ) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateGuarantorDto: UpdateGuarantorDto) {
     return this.guarantorService.update(id, updateGuarantorDto);
   }
 

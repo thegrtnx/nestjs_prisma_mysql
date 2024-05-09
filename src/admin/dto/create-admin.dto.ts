@@ -1,18 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { UserRole } from '.prisma/client';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum } from 'class-validator';
+import { UserRole, Gender, LoanType } from '@prisma/client';
 
-export class CreateAdminDto extends PartialType(CreateUserDto) {
+export class CreateAdminDto {
   @ApiProperty({
-    example: 'omega omega',
+    example: 'John',
     required: true,
   })
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
-  name: string;
+  surname: string;
+
+  @ApiProperty({
+    example: 'Doe',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  otherNames: string;
 
   @ApiProperty({
     example: 'admin@omega.com',
@@ -23,26 +30,28 @@ export class CreateAdminDto extends PartialType(CreateUserDto) {
   @MinLength(3)
   email: string;
 
-  @ApiProperty({
-    example: '+234901048496',
-    required: true,
-  })
-  @IsString()
-  @MinLength(3)
-  @IsNotEmpty()
-  number: string;
-
   @ApiProperty({ example: 'Admin', required: true })
   @IsNotEmpty()
+  @IsEnum(UserRole)
   @MinLength(3)
   role: UserRole;
 
   @ApiProperty({
-    example: 'admin',
-    required: false,
+    example: 'admin123',
+    required: true,
   })
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
   password: string;
+
+  @ApiProperty({ example: 'SalaryLoan', required: false })
+  @IsNotEmpty()
+  @IsEnum(LoanType)
+  loanType: LoanType;
+
+  @ApiProperty({ example: 'Male', required: false })
+  @IsNotEmpty()
+  @IsEnum(Gender)
+  gender: Gender;
 }

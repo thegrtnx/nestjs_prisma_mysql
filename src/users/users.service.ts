@@ -13,12 +13,7 @@ export class UsersService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(
-    createUserDto: CreateUserDto,
-    picture: Express.Multer.File,
-    cardFront: Express.Multer.File,
-    cardBack: Express.Multer.File,
-  ) {
+  async create(createUserDto: CreateUserDto, cardImage: Express.Multer.File, photograph: Express.Multer.File) {
     const { ...userData } = createUserDto;
     const user = await this.prisma.users.create({
       data: {
@@ -26,34 +21,26 @@ export class UsersService {
         role: UserRole.User,
       },
     });
-  
-    let pictureUrl: string | null = null;
-    let cardFrontUrl: string | null = null;
-    let cardBackUrl: string | null = null;
-  
-    if (picture) {
-      pictureUrl = await this.uploadImageToCloudinary(picture);
-    }
-  
-    if (cardFront) {
-      cardFrontUrl = await this.uploadImageToCloudinary(cardFront);
-    }
-  
-    if (cardBack) {
-      cardBackUrl = await this.uploadImageToCloudinary(cardBack);
-    }
-  
-    await this.updateUserImages(user.id, pictureUrl, cardFrontUrl, cardBackUrl);
-  
-    return new handleResponse(HttpStatus.OK, 'User Created Successfully', {
+
+    let cardUrl: string | null = null;
+    let photographUrl: string | null = null;
+
+    if (cardImage)
+      cardUrl = await this.uploadImageToCloudinary(cardImage);
+
+    if (photograph)
+      photographUrl = await this.uploadImageToCloudinary(photograph);
+
+    await this.updateUserImages(user.id, cardUrl, photographUrl);
+
+    return new handleResponse(HttpStatus.CREATED, 'User Created Successfully', {
       ...user,
-      pictureUrl,
-      cardFrontUrl,
-      cardBackUrl,
+      cardUrl,
+      photographUrl,
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.prisma.users
       .findMany({
         where: {
@@ -63,22 +50,19 @@ export class UsersService {
         },
         select: {
           id: true,
-          name: true,
+          surname: true,
+          otherNames: true,
           email: true,
-          number: true,
-          address: true,
+          homeAddress: true,
+          officeAddress: true,
+          telephone: true,
           membership_fee: true,
-          pictureUrl: true,
-          cardFrontUrl: true,
-          cardBackUrl: true,
+          cardUrl: true,
+          photographUrl: true,
         },
       })
       .then((users) => {
-        return new handleResponse(
-          HttpStatus.OK,
-          'All users fetched successfully',
-          users,
-        );
+        return new handleResponse(HttpStatus.OK, 'All users fetched successfully', users);
       });
   }
 
@@ -93,13 +77,7 @@ export class UsersService {
     });
   }
 
-  async update(
-    id: string,
-    updateUserDto: UpdateUserDto,
-    picture: any,
-    cardFront: any,
-    cardBack: any,
-  ) {
+  async update(id: string, updateUserDto: UpdateUserDto, cardImage: any, photograph: any) {
     const { role, ...userData } = updateUserDto;
     const user = await this.prisma.users.update({
       data: {
@@ -109,17 +87,10 @@ export class UsersService {
       where: { id },
     });
 
-    const pictureUrl = picture
-      ? await this.uploadImageToCloudinary(picture)
-      : null;
-    const cardFrontUrl = cardFront
-      ? await this.uploadImageToCloudinary(cardFront)
-      : null;
-    const cardBackUrl = cardBack
-      ? await this.uploadImageToCloudinary(cardBack)
-      : null;
+    const cardUrl = cardImage ? await this.uploadImageToCloudinary(cardImage) : null;
+    const photographUrl = photograph ? await this.uploadImageToCloudinary(photograph) : null;
 
-    await this.updateUserImages(id, pictureUrl, cardFrontUrl, cardBackUrl);
+    await this.updateUserImages(id, cardUrl, photographUrl);
 
     return user;
   }
@@ -128,26 +99,17 @@ export class UsersService {
     return this.prisma.users.delete({ where: { id } });
   }
 
-  private async updateUserImages(
-    id: string,
-    pictureUrl: string,
-    cardFrontUrl: string,
-    cardBackUrl: string,
-  ) {
+  private async updateUserImages(id: string, cardUrl: string, photographUrl: string) {
     const data: Record<string, any> = {};
-  
-    if (pictureUrl) {
-      data.pictureUrl = pictureUrl;
+
+    if (cardUrl) {
+      data.cardUrl = cardUrl;
     }
-  
-    if (cardFrontUrl) {
-      data.cardFrontUrl = cardFrontUrl;
+
+    if (photographUrl) {
+      data.photographUrl = photographUrl;
     }
-  
-    if (cardBackUrl) {
-      data.cardBackUrl = cardBackUrl;
-    }
-  
+
     await this.prisma.users.update({
       where: { id },
       data,
@@ -157,10 +119,8 @@ export class UsersService {
   async uploadImageToCloudinary(file: any): Promise<string | null> {
     try {
       if (!file) return null;
-      // console.log('Uploading file to Cloudinary:', file);
 
       const imageUrl = await this.cloudinaryService.uploadImage(file);
-      // console.log('Uploaded image URL:', imageUrl);
 
       return imageUrl.secure_url;
     } catch (error) {
