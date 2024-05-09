@@ -87,10 +87,16 @@ export class UsersService {
       where: { id },
     });
 
-    const cardUrl = cardImage ? await this.uploadImageToCloudinary(cardImage) : null;
-    const photographUrl = photograph ? await this.uploadImageToCloudinary(photograph) : null;
+    let cardUrl: string | null = null;
+    let photographUrl: string | null = null;
 
-    await this.updateUserImages(id, cardUrl, photographUrl);
+    if (cardImage)
+      cardUrl = await this.uploadImageToCloudinary(cardImage);
+
+    if (photograph)
+      photographUrl = await this.uploadImageToCloudinary(photograph);
+
+    await this.updateUserImages(user.id, cardUrl, photographUrl);
 
     return user;
   }
