@@ -7,6 +7,7 @@ import { GuarantorModule } from 'src/guarantor/guarantor.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AdminModule } from 'src/admin/admin.module';
 import { LoanModule } from 'src/loan/loan.module';
+import { ModeratorModule } from 'src/moderator/moderator.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
@@ -18,6 +19,7 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     LoanModule,
     CloudinaryModule,
     PrismaModule,
+    ModeratorModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,7 +3,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { UserRole } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
@@ -24,7 +24,7 @@ export class AdminService {
         data: {
           ...adminCreateDto,
           password: hashedPassword,
-          role: UserRole.Admin,
+          role: Role.Admin,
         },
       });
 

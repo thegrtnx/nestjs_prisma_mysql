@@ -26,24 +26,26 @@ export class GuarantorController {
   constructor(private readonly guarantorService: GuarantorService) {}
 
   @Post('create/:userId')
-  @ApiOperation({ summary: 'Create guarantors for a specific user' })
+  @ApiOperation({ summary: 'Create a guarantor for a specific user' })
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: 'cardImages', maxCount: 2 },
-      { name: 'photographs', maxCount: 2 },
+      { name: 'cardImage', maxCount: 1 },
+      { name: 'photograph', maxCount: 1 },
     ]),
   )
-  async createForGuarantors(
+  async createGuarantor(
     @Param('userId', ParseUUIDPipe) userId: string,
-    @Body() guarantors: CreateGuarantorDto[],
+    @Body() createGuarantorDto: CreateGuarantorDto,
     @UploadedFiles()
-    files?: {
-      cardImages?: Express.Multer.File[];
-      photographs?: Express.Multer.File[];
-    },
+    files?: { cardImage?: Express.Multer.File[]; photograph?: Express.Multer.File[] },
   ) {
-    const { cardImages, photographs } = files || { cardImages: [], photographs: [] };
-    return this.guarantorService.createForGuarantors(userId, guarantors, cardImages, photographs);
+    const { cardImage, photograph } = files || { cardImage: [], photograph: [] };
+    return this.guarantorService.createGuarantor(
+      userId,
+      createGuarantorDto,
+      cardImage?.[0],
+      photograph?.[0],
+    );
   }
 
   @Get(':userId')
@@ -70,10 +72,30 @@ export class GuarantorController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a guarantor by ID' })
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'cardImage', maxCount: 1 },
+      { name: 'photograph', maxCount: 1 },
+    ]),
+  )
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('defaultBearerAuth')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateGuarantorDto: UpdateGuarantorDto) {
-    return this.guarantorService.update(id, updateGuarantorDto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateGuarantorDto: UpdateGuarantorDto,
+    @UploadedFiles()
+    files: {
+      cardImage?: Express.Multer.File[];
+      photograph?: Express.Multer.File[];
+    },
+  ) {
+    const { cardImage, photograph } = files;
+    return this.guarantorService.update(
+      id,
+      updateGuarantorDto,
+      cardImage?.[0],
+      photograph?.[0],
+    );
   }
 
   @Delete(':id')

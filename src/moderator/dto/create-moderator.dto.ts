@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum } from 'class-validator';
 import { Role, Gender, LoanType } from '@prisma/client';
 
-export class CreateAdminDto {
+export class CreatModeratorDto {
   @ApiProperty({
     example: 'John',
     required: true,

@@ -12,61 +12,57 @@ export class GuarantorService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  async createForGuarantors(
+  async createGuarantor(
     userId: string,
-    guarantors: CreateGuarantorDto[],
-    cardImages: Express.Multer.File[],
-    photographs: Express.Multer.File[],
+    createGuarantorDto: CreateGuarantorDto,
+    cardImage?: Express.Multer.File,
+    photograph?: Express.Multer.File,
   ) {
-    const createdGuarantors = await Promise.all(
-      guarantors.map(async (guarantor, index) => {
-        const {
-          name,
-          email,
-          address,
-          placeOfWork,
-          addressOfBusiness,
-          homeAddress,
-          telephone1,
-          telephone2,
-          positionHeld,
-        } = guarantor;
-  
-        let cardUrl: string | null = null;
-        let photographUrl: string | null = null;
-  
-        if (cardImages[index]) {
-          cardUrl = await this.uploadImageToCloudinary(cardImages[index]);
-        }
-  
-        if (photographs[index]) {
-          photographUrl = await this.uploadImageToCloudinary(photographs[index]);
-        }
-  
-        return this.prisma.guarantors.create({
-          data: {
-            name,
-            email,
-            address,
-            placeOfWork,
-            addressOfBusiness,
-            homeAddress,
-            telephone1,
-            telephone2,
-            positionHeld,
-            cardUrl,
-            photographUrl,
-            guranted_for: {
-              connect: {
-                id: userId,
-              },
-            },
+    const {
+      name,
+      email,
+      address,
+      placeOfWork,
+      addressOfBusiness,
+      homeAddress,
+      telephone1,
+      telephone2,
+      positionHeld,
+    } = createGuarantorDto;
+
+    let cardUrl: string | null = null;
+    let photographUrl: string | null = null;
+
+    if (cardImage) {
+      cardUrl = await this.uploadImageToCloudinary(cardImage);
+    }
+
+    if (photograph) {
+      photographUrl = await this.uploadImageToCloudinary(photograph);
+    }
+
+    const createdGuarantor = await this.prisma.guarantors.create({
+      data: {
+        name,
+        email,
+        address,
+        placeOfWork,
+        addressOfBusiness,
+        homeAddress,
+        telephone1,
+        telephone2,
+        positionHeld,
+        cardUrl,
+        photographUrl,
+        guranted_for: {
+          connect: {
+            id: userId,
           },
-        });
-      }),
-    );
-  
-    return createdGuarantors;
+        },
+      },
+    });
+
+    return createdGuarantor;
   }
 
   async getGuarantorsByUserId(userId: string): Promise<Guarantors[]> {
@@ -85,14 +81,56 @@ export class GuarantorService {
     return this.prisma.guarantors.findUnique({ where: { id } });
   }
 
-  update(id: string, updateGuarantorDto: UpdateGuarantorDto) {
-    return this.prisma.guarantors.update({
-      data: updateGuarantorDto,
+  async update(
+    id: string,
+    updateGuarantorDto: UpdateGuarantorDto,
+    cardImage?: Express.Multer.File,
+    photograph?: Express.Multer.File,
+  ) {
+    const {
+      name,
+      email,
+      address,
+      placeOfWork,
+      addressOfBusiness,
+      homeAddress,
+      telephone1,
+      telephone2,
+      positionHeld,
+    } = updateGuarantorDto;
+  
+    let cardUrl: string | null = null;
+    let photographUrl: string | null = null;
+  
+    if (cardImage) {
+      cardUrl = await this.uploadImageToCloudinary(cardImage);
+    }
+  
+    if (photograph) {
+      photographUrl = await this.uploadImageToCloudinary(photograph);
+    }
+  
+    const updatedGuarantor = await this.prisma.guarantors.update({
       where: { id },
+      data: {
+        name,
+        email,
+        address,
+        placeOfWork,
+        addressOfBusiness,
+        homeAddress,
+        telephone1,
+        telephone2,
+        positionHeld,
+        ...(cardUrl ? { cardUrl } : {}),
+        ...(photographUrl ? { photographUrl } : {}),
+      },
     });
+  
+    return updatedGuarantor;
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     return this.prisma.guarantors.delete({ where: { id } });
   }
 
