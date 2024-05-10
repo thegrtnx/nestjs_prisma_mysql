@@ -9,7 +9,9 @@ import {
   UploadedFiles,
   UseInterceptors,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -39,12 +41,16 @@ export class UsersController {
       cardImage?: Express.Multer.File[];
       photograph?: Express.Multer.File[];
     },
+    @Req() req: Request,
   ) {
+    // console.log(req);
+    const moderatorId = (req.user as any).user.id;
     const { cardImage, photograph } = files;
     return this.usersService.create(
       createUserDto,
       cardImage?.[0],
       photograph?.[0],
+      moderatorId
     );
   }
 
@@ -58,8 +64,9 @@ export class UsersController {
   @ApiOperation({
     summary: 'Endpoint for getting a user by id',
   })
-  async findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  async findOne(@Param('id') id: string, @Req() req: Request) {
+    const moderatorId = (req.user as any).user.id;
+    return this.usersService.findOne(id, moderatorId);
   }
 
   @Get('/user/:email')
@@ -88,13 +95,16 @@ export class UsersController {
       cardImage?: Express.Multer.File[];
       photograph?: Express.Multer.File[];
     },
+    @Req() req: Request
   ) {
+    const moderatorId = (req.user as any).user.id;
     const { cardImage, photograph } = files;
     return this.usersService.update(
       id,
       updateUserDto,
       cardImage?.[0],
       photograph?.[0],
+      moderatorId
     );
   }
 

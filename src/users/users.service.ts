@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { UserRole } from '.prisma/client';
+import { Role } from '.prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -13,21 +13,25 @@ export class UsersService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createUserDto: CreateUserDto, cardImage: Express.Multer.File, photograph: Express.Multer.File) {
+  async create(
+    createUserDto: CreateUserDto,
+    cardImage: Express.Multer.File,
+    photograph: Express.Multer.File,
+    moderatorId: string,
+  ) {
     const { ...userData } = createUserDto;
+
     const user = await this.prisma.users.create({
       data: {
         ...userData,
-        role: UserRole.User,
+        role: Role.User,
+        createdBy: moderatorId,
       },
     });
 
     let cardUrl: string | null = null;
     let photographUrl: string | null = null;
-
-    if (cardImage)
-      cardUrl = await this.uploadImageToCloudinary(cardImage);
-
+    if (cardImage) cardUrl = await this.uploadImageToCloudinary(cardImage);
     if (photograph)
       photographUrl = await this.uploadImageToCloudinary(photograph);
 
@@ -41,11 +45,12 @@ export class UsersService {
   }
 
   async findAll() {
+    // const moderatorId = req.user['id'];
     return this.prisma.users
       .findMany({
         where: {
           role: {
-            not: 'Admin',
+            not: Role.Admin,
           },
         },
         select: {
@@ -59,50 +64,76 @@ export class UsersService {
           membership_fee: true,
           cardUrl: true,
           photographUrl: true,
+          createdBy: true
         },
       })
       .then((users) => {
-        return new handleResponse(HttpStatus.OK, 'All users fetched successfully', users);
+        return new handleResponse(
+          HttpStatus.OK,
+          'All users fetched successfully',
+          users,
+        );
       });
   }
 
-  async findOne(id: string) {
-    return this.prisma.users.findUniqueOrThrow({ where: { id } });
+  async findOne(id: string, moderatorId: string) {
+    return this.prisma.users.findFirstOrThrow({
+      where: {
+        id,
+        createdBy: moderatorId,
+      },
+    });
   }
 
   async findOneByEmail(email: string) {
-    const user = await this.prisma.users.findUnique({ where: { email } });
+    const user = await this.prisma.users.findFirst({
+      where: {
+        email,
+      },
+    });
     return new handleResponse(HttpStatus.OK, 'User fetched successfully', {
       user,
     });
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, cardImage: any, photograph: any) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    cardImage: any,
+    photograph: any,
+    moderatorId: string
+  ) {
     const { role, ...userData } = updateUserDto;
-    const user = await this.prisma.users.update({
+
+    const user = await this.prisma.users.updateMany({
+      where: {
+        id,
+        createdBy: moderatorId,
+      },
       data: {
         ...userData,
-        role: role ? role : UserRole.User,
+        role: role ? role : Role.User,
       },
-      where: { id },
     });
 
     let cardUrl: string | null = null;
     let photographUrl: string | null = null;
-
     if (cardImage)
       cardUrl = await this.uploadImageToCloudinary(cardImage);
-
     if (photograph)
       photographUrl = await this.uploadImageToCloudinary(photograph);
 
-    await this.updateUserImages(user.id, cardUrl, photographUrl);
+    await this.updateUserImages(id, cardUrl, photographUrl);
 
     return user;
   }
 
   remove(id: string) {
-    return this.prisma.users.delete({ where: { id } });
+    return this.prisma.users.deleteMany({
+      where: {
+        id,
+      },
+    });
   }
 
   private async updateUserImages(id: string, cardUrl: string, photographUrl: string) {
