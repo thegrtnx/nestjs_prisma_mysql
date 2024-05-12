@@ -12,17 +12,34 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = await this.userService.findOneByEmail(email);
+    try {
+      const user = await this.userService.findOneByEmail(email);
 
-    const hashedPassword = await bcrypt.compare(password, user.data.user.password);
+      if (!user.data.user) {
+        return new handleResponse(HttpStatus.NOT_FOUND, 'User not found');
+      }
 
-    if (!hashedPassword) return false;
-    const accessToken = this.jwtService.sign({
-      user: user.data.user,
-    });
+      const hashedPassword = await bcrypt.compare(
+        password,
+        user.data.user.password,
+      );
 
-    return new handleResponse(HttpStatus.OK, 'User Login Successfull', {
-      access_token: accessToken,
-    });
+      if (!hashedPassword) {
+        return new handleResponse(HttpStatus.UNAUTHORIZED, 'Invalid password');
+      }
+
+      const accessToken = this.jwtService.sign({ user: user.data.user });
+
+      return new handleResponse(HttpStatus.OK, 'User Login Successful', {
+        access_token: accessToken,
+      });
+    } catch (error) {
+      // Handle any unexpected errors
+      console.error('Error in validateUser:', error);
+      return new handleResponse(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        'An error occurred during user validation',
+      );
+    }
   }
 }
