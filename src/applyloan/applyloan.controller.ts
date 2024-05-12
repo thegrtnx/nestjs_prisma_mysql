@@ -3,11 +3,12 @@ import { LoanApplicationService } from './applyloan.service';
 import { CreateLoanApplicationDto } from './dto/create-applyloan.dto';
 import { UpdateLoanApplicationDto } from './dto/update-applyloan.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { Request } from 'express';
 
 @ApiTags('Loan Applications')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('Authorization')
 @Controller('loan-application')
 export class LoanApplicationController {
   constructor(private readonly loanApplicationService: LoanApplicationService) {}
