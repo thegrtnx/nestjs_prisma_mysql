@@ -45,13 +45,10 @@ export class UsersService {
   }
 
   async findAll() {
-    // const moderatorId = req.user['id'];
     return this.prisma.users
       .findMany({
         where: {
-          role: {
-            not: Role.Admin,
-          },
+          role: Role.User,
         },
         select: {
           id: true,
