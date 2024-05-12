@@ -9,6 +9,7 @@ import { AdminModule } from 'src/admin/admin.module';
 import { LoanModule } from 'src/loan/loan.module';
 import { ModeratorModule } from 'src/moderator/moderator.module';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
+import { ApplyloanModule } from 'src/applyloan/applyloan.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
     LoanModule,
     CloudinaryModule,
     PrismaModule,
-    ModeratorModule
+    ModeratorModule,
+    ApplyloanModule,
   ],
   controllers: [AppController],
   providers: [AppService],
