@@ -38,8 +38,10 @@ model Guarantors {
   name              String
   email             String  @unique
   address           String
+  gender            Gender?
   cardType          String?
   cardUrl           String?
+  nationality       String?
   placeOfWork       String?
   addressOfBusiness String?
   homeAddress       String?
