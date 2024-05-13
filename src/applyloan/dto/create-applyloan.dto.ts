@@ -1,8 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { YesNo } from '.prisma/client'
+import { YesNo, LoanType } from '.prisma/client'
 
 export class CreateLoanApplicationDto {
+  @ApiProperty({ example: 'SalaryLoan' })
+  @IsNotEmpty()
+  @IsEnum(LoanType)
+  loanType: LoanType;
+
   @ApiProperty({ example: 50000 })
   @IsNotEmpty()
   @IsNumber()
@@ -66,7 +71,7 @@ export class CreateLoanApplicationDto {
   @IsString()
   bankAccNumber: string;
 
-  @ApiProperty({ example: true })
+  @ApiProperty({ example: 'Yes' })
   @IsNotEmpty()
   @IsEnum(YesNo)
   outstandingLoans: YesNo;
