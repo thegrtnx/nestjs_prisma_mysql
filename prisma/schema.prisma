@@ -14,7 +14,6 @@ model Users {
   id               String            @id @default(uuid())
   surname          String
   otherNames       String
-  loanType         LoanType?
   password         String?
   gender           Gender?
   role             Role              @default(User)
@@ -49,7 +48,7 @@ model Guarantors {
   positionHeld      String?
   photographUrl     String?
   UserID            String
-  guranted_for      Users   @relation(fields: [UserID], references: [id])
+  guranted_for      Users   @relation(fields: [UserID], references: [id], onDelete: Cascade)
 }
 
 model LoanCategory {
@@ -60,6 +59,7 @@ model LoanCategory {
 
 model LoanApplication {
   id                  String   @id @default(uuid())
+  loanType            LoanType?
   loanAmount          Float    @default(0.0)
   managementFee       Float?   @default(0.0)
   applicationFee      Float?   @default(3000.0)
@@ -77,7 +77,7 @@ model LoanApplication {
   remarks             String   @default("pending")
   moderatorId         String
   userId              String
-  user                Users    @relation(fields: [userId], references: [id])
+  user                Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }

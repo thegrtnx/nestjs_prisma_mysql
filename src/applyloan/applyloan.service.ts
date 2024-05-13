@@ -14,6 +14,7 @@ export class LoanApplicationService {
     userId: string,
   ) {
     const {
+      loanType,
       loanAmount,
       managementFee,
       applicationFee,
@@ -35,6 +36,7 @@ export class LoanApplicationService {
   
     return this.prisma.loanApplication.create({
       data: {
+        loanType,
         loanAmount,
         managementFee,
         applicationFee,
