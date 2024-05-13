@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum } from 'class-validator';
-import { Role, Gender, LoanType } from '@prisma/client';
+import { Role, Gender } from '@prisma/client';
 
 export class CreateAdminDto {
   @ApiProperty({
@@ -44,11 +44,6 @@ export class CreateAdminDto {
   @IsNotEmpty()
   @MinLength(3)
   password: string;
-
-  @ApiProperty({ example: 'SalaryLoan', required: false })
-  @IsNotEmpty()
-  @IsEnum(LoanType)
-  loanType: LoanType;
 
   @ApiProperty({ example: 'Male', required: false })
   @IsNotEmpty()
