@@ -126,7 +126,7 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.prisma.users.deleteMany({
+    return this.prisma.users.delete({
       where: {
         id,
       },

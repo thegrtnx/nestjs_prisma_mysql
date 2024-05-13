@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Gender, LoanType, Role, cardType } from '.prisma/client';
+import { Gender, Role, cardType } from '.prisma/client';
 import {
   IsEmail,
   IsNotEmpty,
@@ -21,11 +21,6 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   otherNames: string;
-
-  @ApiProperty({ example: 'SalaryLoan', required: true })
-  @IsEnum(LoanType)
-  @IsNotEmpty()
-  loanType: LoanType;
 
   @ApiProperty({ example: 'password123', required: false })
   @IsString()
