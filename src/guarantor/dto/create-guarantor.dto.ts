@@ -1,11 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsEnum,
   IsString,
   MinLength,
   IsNotEmpty,
   IsEmail,
   IsOptional,
 } from 'class-validator';
+import { Gender } from '@prisma/client';
 
 export class CreateGuarantorDto {
   @ApiProperty({
@@ -33,6 +35,19 @@ export class CreateGuarantorDto {
   @IsNotEmpty()
   @MinLength(3)
   address: string;
+
+  @ApiProperty({ example: 'Male', required: true })
+  @IsEnum(Gender)
+  @IsNotEmpty()
+  gender: Gender;
+
+  @ApiProperty({
+    example: 'Nigeria',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  nationality: string;
 
   @ApiProperty({
     example: 'Company XYZ',

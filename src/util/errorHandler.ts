@@ -44,6 +44,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
             ' on ' +
             prismaErrorInstance.metaData['target'];
         }
+      // } else if (prismaErrorInstance.message === 'P2025') {
+      //   status = HttpStatus.NOT_FOUND;
+      //   message = 'The requested resource was not found.';
       } else {
         status = prismaErrorInstance.statusCode;
         message = prismaErrorInstance.message;
