@@ -28,7 +28,7 @@ export class CreateLoanApplicationDto {
   @IsNumber()
   equity: number;
 
-  @ApiProperty({ example: '02-04-2023' })
+  @ApiProperty({ example: '2023-04-22' })
   @IsOptional()
   disbursedDate: Date;
 
@@ -52,7 +52,7 @@ export class CreateLoanApplicationDto {
   @IsString()
   officeAddress: string;
 
-  @ApiProperty({ example: '01-06-2023' })
+  @ApiProperty({ example: '2024-02-23' })
   @IsOptional()
   salaryDate?: Date;
 
