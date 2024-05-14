@@ -31,8 +31,8 @@ export class LoanApplicationService {
       outstandingLoans,
     } = createLoanApplicationDto;
 
-    const parsedDisbursedDate = moment(disbursedDate, 'MM-DD-YYYY').toISOString();
-    const parsedSalaryDate = salaryDate ? moment(salaryDate, 'MM-DD-YYYY').toISOString() : null;
+    const parsedDisbursedDate = moment(disbursedDate, 'YYYY-MM-DD').toISOString();
+    const parsedSalaryDate = salaryDate ? moment(salaryDate, 'YYYY-MM-DD').toISOString() : null;
   
     return this.prisma.loanApplication.create({
       data: {
