@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -60,28 +57,28 @@ model LoanCategory {
 }
 
 model LoanApplication {
-  id                  String   @id @default(uuid())
-  loanType            LoanType?
-  loanAmount          Float    @default(0.0)
-  managementFee       Float?   @default(0.0)
-  applicationFee      Float?   @default(3000.0)
-  equity              Float?   @default(0.0)
-  disbursedDate       DateTime
-  loanTenure          String
-  preLoanAmount       Float?
-  preLoanTenure       String?
-  officeAddress       String
-  salaryDate          DateTime?
-  salaryAmount        Float?
-  bankName            String?
-  bankAccNumber       String?
-  outstandingLoans    YesNo?
-  remarks             String   @default("pending")
-  moderatorId         String
-  userId              String
-  user                Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id               String    @id @default(uuid())
+  loanType         LoanType?
+  loanAmount       Float     @default(0.0)
+  managementFee    Float?    @default(0.0)
+  applicationFee   Float?    @default(3000.0)
+  equity           Float?    @default(0.0)
+  disbursedDate    DateTime
+  loanTenure       String
+  preLoanAmount    Float?
+  preLoanTenure    String?
+  officeAddress    String
+  salaryDate       DateTime?
+  salaryAmount     Float?
+  bankName         String?
+  bankAccNumber    String?
+  outstandingLoans YesNo?
+  remarks          String    @default("pending")
+  moderatorId      String
+  userId           String
+  user             Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 enum Role {
