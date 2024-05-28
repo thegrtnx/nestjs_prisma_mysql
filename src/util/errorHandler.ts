@@ -5,27 +5,27 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { Prisma } from '@prisma/client';
-import { prismaError } from 'prisma-better-errors';
+} from '@nestjs/common'
+import { Response } from 'express'
+import { Prisma } from '@prisma/client'
+import { prismaError } from 'prisma-better-errors'
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
-  private readonly logger = new Logger(GlobalExceptionFilter.name);
+  private readonly logger = new Logger(GlobalExceptionFilter.name)
 
   catch(exception: any, host: ArgumentsHost) {
-    const ctx = host.switchToHttp();
-    const response = ctx.getResponse<Response>();
+    const ctx = host.switchToHttp()
+    const response = ctx.getResponse<Response>()
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal Server Error';
+    let status = HttpStatus.INTERNAL_SERVER_ERROR
+    let message = 'Internal Server Error'
 
     if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      message = exception.message;
+      status = exception.getStatus()
+      message = exception.message
     } else if (this.isPrismaError(exception)) {
-      const prismaErrorInstance = new prismaError(exception);
+      const prismaErrorInstance = new prismaError(exception)
 
       if (
         prismaErrorInstance.metaData &&
@@ -35,38 +35,35 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           prismaErrorInstance.metaData['target'] === null ||
           prismaErrorInstance.metaData['target'] === ''
         ) {
-          status = prismaErrorInstance.statusCode;
-          message = prismaErrorInstance.message;
+          status = prismaErrorInstance.statusCode
+          message = prismaErrorInstance.message
         } else {
-          status = prismaErrorInstance.statusCode;
+          status = prismaErrorInstance.statusCode
           message =
             prismaErrorInstance.message +
             ' on ' +
-            prismaErrorInstance.metaData['target'];
+            prismaErrorInstance.metaData['target']
         }
-      // } else if (prismaErrorInstance.message === 'P2025') {
-      //   status = HttpStatus.NOT_FOUND;
-      //   message = 'The requested resource was not found.';
       } else {
-        status = prismaErrorInstance.statusCode;
-        message = prismaErrorInstance.message;
+        status = prismaErrorInstance.statusCode
+        message = prismaErrorInstance.message
       }
     } else {
-      this.logger.error(exception);
-      message = exception.message;
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      this.logger.error(exception)
+      message = exception.message
+      status = HttpStatus.INTERNAL_SERVER_ERROR
     }
 
     response.status(status).json({
       statusCode: status,
       statusType: HttpStatus[status],
       message: message,
-    });
+    })
   }
 
   private isPrismaError(
     error: any,
   ): error is Prisma.PrismaClientKnownRequestError {
-    return error.code !== undefined;
+    return error.code !== undefined
   }
 }

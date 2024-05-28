@@ -1,13 +1,13 @@
+import * as bcrypt from 'bcrypt';
+import { Role } from '@prisma/client';
+import { PrismaService } from 'lib/prisma.service';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { CreatModeratorDto } from './dto/create-moderator.dto';
 import { UpdateModeratorDto } from './dto/update-moderator.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import * as bcrypt from 'bcrypt';
-import { Role } from '@prisma/client';
 
 @Injectable()
 export class ModeratorService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(moderatorCreateDto: CreatModeratorDto) {
     const { email, password } = moderatorCreateDto;

@@ -1,14 +1,14 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common'
 
 export class handleResponse {
-  public statusType?: string;
+  public statusType?: string
 
   constructor(
     public statusCode: number,
     public message?: string | null,
     public data?: any,
   ) {
-    this.statusCode = statusCode;
-    this.statusType = HttpStatus[this.statusCode];
+    this.statusCode = statusCode
+    this.statusType = HttpStatus[this.statusCode]
   }
 }

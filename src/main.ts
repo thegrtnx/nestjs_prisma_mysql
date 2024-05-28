@@ -1,55 +1,47 @@
-import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { AppModule } from './app/app.module';
-import { GlobalExceptionFilter } from './util/errorHandler';
+import * as express from 'express'
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './app/app.module'
+import { ValidationPipe } from '@nestjs/common'
+import { GlobalExceptionFilter } from './util/errorHandler'
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule)
+  const PORT: number = parseInt(process.env.PORT, 10) || 3001
 
   app.enableCors({
     origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: true,
-    optionsSuccessStatus: 204,
-    credentials: true,
-  });
+    optionsSuccessStatus: 200,
+    methods: 'GET,PUT,PATCH,POST,DELETE',
+  })
+  app.use(express.json({ limit: 10 << 20 }))
 
-  app.use(cookieParser());
-  app.useGlobalFilters(new GlobalExceptionFilter());
+  app.useGlobalFilters(new GlobalExceptionFilter())
   app.useGlobalPipes(
     new ValidationPipe({ stopAtFirstError: true, transform: true }),
-  );
+  )
 
-  const options = new DocumentBuilder()
-    .setTitle('Your API Title')
-    .setDescription('Your API description')
-    .setVersion('1.0')
+  const swaggerOptions = new DocumentBuilder()
+    .setTitle('Omega Loan')
+    .setDescription('API Endpoints for Omega Loan')
+    .setVersion('1.2.7')
 
-    //.addServer('http://localhost:3001', 'Local environment')
     .addServer('https://api.omegasupportaccessltd.com', 'Production')
-    .addServer('http://localhost:3001', 'Local environment')
+    .addServer(`http://localhost:${PORT}`, 'Local environment')
     .addBearerAuth(
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'Authorization',
     )
-    .addTag('Admin', 'Endpoint for Admin functions')
-    .addTag('App', 'Endpoint for server test')
-    .addTag('Auth', 'Endpoint for authentication')
-    .addTag('Customers', 'Endpoint for customers')
-    .addTag('Guarantors', 'Endpoint for Guarantors')
-    .build();
+    .build()
 
-  const document = SwaggerModule.createDocument(app, options);
+  const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions)
+  SwaggerModule.setup('api-docs', app, swaggerDocument)
 
-  SwaggerModule.setup('api-docs', app, document, {
-    swaggerOptions: {
-      tagsSorter: 'alpha',
-      //operationsSorter: 'alpha',
-    },
-  });
-
-  await app.listen(3001);
+  try {
+    await app.listen(PORT)
+    console.log(`Server is running on http://localhost:${PORT}`)
+  } catch (error) {
+    console.error(`Error starting the server: ${error.message}`)
+  }
 }
-bootstrap();
+bootstrap()
